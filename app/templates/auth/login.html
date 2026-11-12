@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechNova - Login</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f172a; }
+        .card { background: #fff; width: 100%; max-width: 380px; padding: 32px; border-radius: 12px; }
+        h1 { color: #0f172a; margin-bottom: 4px; }
+        p.sub { color: #64748b; margin-bottom: 24px; font-size: 14px; }
+        label { display: block; font-size: 13px; color: #334155; margin-bottom: 6px; }
+        input { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+        button { width: 100%; padding: 11px; background: #2563eb; color: #fff; border: 0; border-radius: 8px; font-size: 15px; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        .alert { background: #fee2e2; color: #b91c1c; padding: 10px 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>TechNova</h1>
+        <p class="sub">Enterprise Management System</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            <label>Username</label>
+            <input type="text" name="username" required autofocus>
+            <label>Password</label>
+            <input type="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

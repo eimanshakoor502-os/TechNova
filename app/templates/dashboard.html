@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}TechNova - Dashboard{% endblock %}
+
+{% block content %}
+<div class="cards">
+    {% for c in cards %}
+    <div class="card"><div class="num">{{ c.num }}</div><div class="label">{{ c.label }}</div></div>
+    {% endfor %}
+</div>
+
+{% if current_user.role == 'employee' %}
+
+    {% if not linked %}
+    <div class="panel">
+        <h3>Account link nahi hai</h3>
+        <p>Aapka account kisi employee record se link nahi hai. Admin se kaho ke Users mein aapka account edit karke "Linked Employee" chuna de.</p>
+    </div>
+    {% else %}
+    <div class="chart-grid">
+        <div class="panel">
+            <h3>My Tasks by Status</h3>
+            <div class="chart-box"><canvas id="tasksChart"></canvas></div>
+        </div>
+        <div class="panel">
+            <h3>My Next Tasks</h3>
+            <table>
+                <tr><th>Title</th><th>Priority</th><th>Due</th><th>Status</th></tr>
+                {% for t in my_tasks %}
+                <tr>
+                    <td>{{ t.title }}</td>
+                    <td>{{ t.priority }}</td>
+                    <td>
+                        {{ t.due_date.strftime('%d %b %Y') if t.due_date else '-' }}
+                        {% if t.due_date and t.due_date < today %}<span class="badge overdue">Overdue</span>{% endif %}
+                    </td>
+                    <td>{{ t.status }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4">Koi open task nahi. Shabash!</td></tr>
+                {% endfor %}
+            </table>
+            <p style="margin-top:12px;"><a class="link" href="{{ url_for('work.task_list') }}">Saare tasks dekho &rarr;</a></p>
+        </div>
+    </div>
+    {% endif %}
+
+{% else %}
+
+    <div class="chart-grid">
+        <div class="panel">
+            <h3>Tasks by Status</h3>
+            <div class="chart-box"><canvas id="tasksChart"></canvas></div>
+        </div>
+        <div class="panel">
+            <h3>Projects by Status</h3>
+            <div class="chart-box"><canvas id="projectsChart"></canvas></div>
+        </div>
+        <div class="panel">
+            <h3>Employees by Department</h3>
+            <div class="chart-box"><canvas id="deptChart"></canvas></div>
+        </div>
+        <div class="panel">
+            <h3>IT Assets by Status</h3>
+            <div class="chart-box"><canvas id="assetsChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="panel" style="margin-top:20px;">
+        <h3>Upcoming Project Deadlines</h3>
+        <table>
+            <tr><th>Project</th><th>Client</th><th>Deadline</th></tr>
+            {% for p in upcoming_projects %}
+            <tr>
+                <td>{{ p.name }}</td>
+                <td>{{ p.client.company_name if p.client else '-' }}</td>
+                <td>
+                    {{ p.deadline.strftime('%d %b %Y') }}
+                    {% if p.deadline < today %}<span class="badge overdue">Overdue</span>{% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">Koi active project deadline nahi.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    {% if current_user.role == 'admin' %}
+    <div class="panel" style="margin-top:20px;">
+        <h3>Recent Activity</h3>
+        <table>
+            <tr><th>User</th><th>Action</th><th>Time</th></tr>
+            {% for log in recent_logs %}
+            <tr>
+                <td>{{ log.user.username if log.user else '-' }}</td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">Abhi koi activity nahi.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<div id="chart-data" data-charts='{{ charts | tojson }}' hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const charts = JSON.parse(document.getElementById("chart-data").dataset.charts);
+    const colors = ["#f59e0b", "#2563eb", "#16a34a", "#dc2626", "#7c3aed", "#0891b2"];
+
+    function makeChart(id, type, data) {
+        const el = document.getElementById(id);
+        if (!el || !data) { return; }
+        new Chart(el, {
+            type: type,
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.values,
+                    backgroundColor: colors.slice(0, data.labels.length),
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: type === "doughnut", position: "bottom" } },
+                scales: type === "bar" ? { y: { beginAtZero: true, ticks: { precision: 0 } } } : {}
+            }
+        });
+    }
+
+    makeChart("tasksChart", "doughnut", charts.tasks);
+    makeChart("projectsChart", "doughnut", charts.projects);
+    makeChart("deptChart", "bar", charts.departments);
+    makeChart("assetsChart", "bar", charts.assets);
+</script>
+{% endblock %}

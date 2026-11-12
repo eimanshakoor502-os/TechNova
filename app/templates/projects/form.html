@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Project{% endblock %}
+{% block heading %}{{ 'Edit Project' if project else 'Add Project' }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <form method="POST">
+        <label>Project Name</label>
+        <input type="text" name="name" value="{{ project.name if project else '' }}" required>
+
+        <label>Description</label>
+        <textarea name="description" rows="3">{{ project.description or '' if project else '' }}</textarea>
+
+        <label>Client</label>
+        <select name="client_id">
+            <option value="">-- Select --</option>
+            {% for c in clients %}
+            <option value="{{ c.id }}" {% if project and project.client_id == c.id %}selected{% endif %}>{{ c.company_name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Start Date</label>
+        <input type="date" name="start_date" value="{{ project.start_date or '' if project else '' }}">
+
+        <label>Deadline</label>
+        <input type="date" name="deadline" value="{{ project.deadline or '' if project else '' }}">
+
+        <label>Status</label>
+        <select name="status">
+            {% for s in statuses %}
+            <option value="{{ s }}" {% if project and project.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Team Members</label>
+        <div class="checks">
+            {% for e in employees %}
+            <label><input type="checkbox" name="members" value="{{ e.id }}"
+                {% if project and e in project.members %}checked{% endif %}> {{ e.full_name }}</label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn">Save</button>
+        <a href="{{ url_for('work.project_list') }}" class="link">Cancel</a>
+    </form>
+</div>
+{% endblock %}

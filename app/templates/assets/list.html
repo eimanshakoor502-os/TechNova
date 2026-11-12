@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}TechNova - IT Assets{% endblock %}
+{% block heading %}IT Assets{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-head">
+        <h3>All Assets ({{ assets|length }})</h3>
+        <a href="{{ url_for('assets.asset_add') }}" class="btn">+ Add Asset</a>
+    </div>
+    <table>
+        <tr><th>Name</th><th>Type</th><th>Serial No</th><th>Purchase Date</th><th>Assigned To</th><th>Status</th><th>Actions</th></tr>
+        {% for a in assets %}
+        <tr>
+            <td>{{ a.name }}</td>
+            <td>{{ a.asset_type or '-' }}</td>
+            <td>{{ a.serial_number or '-' }}</td>
+            <td>{{ a.purchase_date.strftime('%d %b %Y') if a.purchase_date else '-' }}</td>
+            <td>{{ a.holder.full_name if a.holder else '-' }}</td>
+            <td>{{ a.status }}</td>
+            <td>
+                <a href="{{ url_for('assets.asset_edit', asset_id=a.id) }}" class="link">Edit</a>
+                {% if current_user.role == 'admin' %}
+                <form method="POST" action="{{ url_for('assets.asset_delete', asset_id=a.id) }}" class="inline" onsubmit="return confirm('Delete karna hai?');">
+                    <button class="link danger-text">Delete</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7">Abhi koi asset nahi.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

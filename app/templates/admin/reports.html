@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Reports{% endblock %}
+{% block heading %}Reports{% endblock %}
+
+{% block content %}
+<div class="report-grid">
+    <div class="panel">
+        <h3>Tasks by Status</h3>
+        <table>
+            {% for s in ['Pending', 'In Progress', 'Done'] %}
+            <tr><td>{{ s }}</td><td>{{ tasks_by_status.get(s, 0) }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="panel">
+        <h3>Projects by Status</h3>
+        <table>
+            {% for s in ['Active', 'On Hold', 'Completed'] %}
+            <tr><td>{{ s }}</td><td>{{ projects_by_status.get(s, 0) }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="panel">
+        <h3>IT Assets by Status</h3>
+        <table>
+            {% for s in ['Available', 'Assigned', 'Repair'] %}
+            <tr><td>{{ s }}</td><td>{{ assets_by_status.get(s, 0) }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="panel">
+        <h3>Employees by Department</h3>
+        <table>
+            {% for name, count in employees_by_dept %}
+            <tr><td>{{ name }}</td><td>{{ count }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="panel">
+        <h3>Open Tasks per Employee</h3>
+        <table>
+            {% for name, count in workload %}
+            <tr><td>{{ name }}</td><td>{{ count }}</td></tr>
+            {% else %}
+            <tr><td>Abhi koi employee nahi.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

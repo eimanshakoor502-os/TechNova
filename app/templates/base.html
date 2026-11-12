@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TechNova{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <h2>TechNova</h2>
+        <div class="tag">Enterprise Management</div>
+
+        <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+
+        {% if current_user.role in ['admin', 'manager'] %}
+            
+                        <a href="{{ url_for('employees.employee_list') }}">Employees</a>
+            <a href="{{ url_for('employees.departments') }}">Departments</a>
+                        <a href="{{ url_for('work.client_list') }}">Clients</a>
+            <a href="{{ url_for('work.project_list') }}">Projects</a>
+            
+        {% endif %}
+
+                <a href="{{ url_for('work.task_list') }}">Tasks</a>
+
+        {% if current_user.role in ['admin', 'manager'] %}
+                        <a href="{{ url_for('assets.asset_list') }}">IT Assets</a>
+        {% endif %}
+
+        {% if current_user.role == 'admin' %}
+                        <a href="{{ url_for('admin.user_list') }}">Users</a>
+            <a href="{{ url_for('admin.reports') }}">Reports</a>
+            <a href="{{ url_for('admin.audit_logs') }}">Audit Logs</a>
+        {% endif %}
+
+        <a href="{{ url_for('auth.logout') }}" class="logout">Logout</a>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h1>{% block heading %}Dashboard{% endblock %}</h1>
+            <div>{{ current_user.username }} <span class="badge">{{ current_user.role }}</span></div>
+        </div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

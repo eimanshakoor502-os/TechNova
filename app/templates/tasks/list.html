@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Tasks{% endblock %}
+{% block heading %}{{ 'Tasks' if current_user.role != 'employee' else 'My Tasks' }}{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-head">
+        <h3>Tasks ({{ tasks|length }})</h3>
+        {% if current_user.role in ['admin', 'manager'] %}
+        <a href="{{ url_for('work.task_add') }}" class="btn">+ Add Task</a>
+        {% endif %}
+    </div>
+    <table>
+        <tr><th>Title</th><th>Project</th><th>Assigned To</th><th>Priority</th><th>Due</th><th>Status</th>
+            {% if current_user.role in ['admin', 'manager'] %}<th>Actions</th>{% endif %}</tr>
+        {% for t in tasks %}
+        <tr>
+            <td>{{ t.title }}</td>
+            <td>{{ t.project.name if t.project else '-' }}</td>
+            <td>{{ t.assignee.full_name if t.assignee else '-' }}</td>
+            <td>{{ t.priority }}</td>
+            <td>{{ t.due_date.strftime('%d %b %Y') if t.due_date else '-' }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('work.task_status', task_id=t.id) }}" class="inline">
+                    <select name="status" onchange="this.form.submit()">
+                        {% for s in statuses %}
+                        <option value="{{ s }}" {% if t.status == s %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </td>
+            {% if current_user.role in ['admin', 'manager'] %}
+            <td>
+                <a href="{{ url_for('work.task_edit', task_id=t.id) }}" class="link">Edit</a>
+                {% if current_user.role == 'admin' %}
+                <form method="POST" action="{{ url_for('work.task_delete', task_id=t.id) }}" class="inline" onsubmit="return confirm('Delete karna hai?');">
+                    <button class="link danger-text">Delete</button>
+                </form>
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+        {% else %}
+        <tr><td colspan="7">Abhi koi task nahi.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

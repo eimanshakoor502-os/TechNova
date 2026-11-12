@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Asset{% endblock %}
+{% block heading %}{{ 'Edit Asset' if asset else 'Add Asset' }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <form method="POST">
+        <label>Asset Name</label>
+        <input type="text" name="name" value="{{ asset.name if asset else '' }}" required>
+
+        <label>Type</label>
+        <select name="asset_type">
+            {% for t in types %}
+            <option value="{{ t }}" {% if asset and asset.asset_type == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Serial Number</label>
+        <input type="text" name="serial_number" value="{{ asset.serial_number or '' if asset else '' }}">
+
+        <label>Purchase Date</label>
+        <input type="date" name="purchase_date" value="{{ asset.purchase_date or '' if asset else '' }}">
+
+        <label>Assign To</label>
+        <select name="employee_id">
+            <option value="">-- Not assigned --</option>
+            {% for e in employees %}
+            <option value="{{ e.id }}" {% if asset and asset.employee_id == e.id %}selected{% endif %}>{{ e.full_name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Status</label>
+        <select name="status">
+            {% for s in statuses %}
+            <option value="{{ s }}" {% if asset and asset.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn">Save</button>
+        <a href="{{ url_for('assets.asset_list') }}" class="link">Cancel</a>
+    </form>
+</div>
+{% endblock %}

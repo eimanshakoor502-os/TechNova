@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Task{% endblock %}
+{% block heading %}{{ 'Edit Task' if task else 'Add Task' }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <form method="POST">
+        <label>Title</label>
+        <input type="text" name="title" value="{{ task.title if task else '' }}" required>
+
+        <label>Description</label>
+        <textarea name="description" rows="3">{{ task.description or '' if task else '' }}</textarea>
+
+        <label>Project</label>
+        <select name="project_id">
+            <option value="">-- Select --</option>
+            {% for p in projects %}
+            <option value="{{ p.id }}" {% if task and task.project_id == p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Assign To</label>
+        <select name="employee_id">
+            <option value="">-- Select --</option>
+            {% for e in employees %}
+            <option value="{{ e.id }}" {% if task and task.employee_id == e.id %}selected{% endif %}>{{ e.full_name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Priority</label>
+        <select name="priority">
+            {% for p in priorities %}
+            <option value="{{ p }}" {% if (task and task.priority == p) or (not task and p == 'Medium') %}selected{% endif %}>{{ p }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Status</label>
+        <select name="status">
+            {% for s in statuses %}
+            <option value="{{ s }}" {% if task and task.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Due Date</label>
+        <input type="date" name="due_date" value="{{ task.due_date or '' if task else '' }}">
+
+        <button type="submit" class="btn">Save</button>
+        <a href="{{ url_for('work.task_list') }}" class="link">Cancel</a>
+    </form>
+</div>
+{% endblock %}

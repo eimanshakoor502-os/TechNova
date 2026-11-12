@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}TechNova - User{% endblock %}
+{% block heading %}{{ 'Edit User' if user else 'Add User' }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <form method="POST">
+        <label>Username</label>
+        {% if user %}
+        <input type="text" value="{{ user.username }}" disabled>
+        {% else %}
+        <input type="text" name="username" required>
+        {% endif %}
+
+        <label>Email</label>
+        <input type="email" name="email" value="{{ user.email if user else '' }}" required>
+
+        <label>{{ 'New Password (khali chhodo to purana rahega)' if user else 'Password (kam az kam 6 characters)' }}</label>
+        <input type="password" name="password" {% if not user %}required{% endif %}>
+
+        <label>Role</label>
+        <select name="role">
+            {% for r in roles %}
+            <option value="{{ r }}" {% if user and user.role == r %}selected{% endif %}>{{ r }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Linked Employee (employee role ke tasks dekhne ke liye zaroori)</label>
+        <select name="employee_id">
+            <option value="">-- None --</option>
+            {% for e in employees %}
+            <option value="{{ e.id }}" {% if user and user.employee_id == e.id %}selected{% endif %}>{{ e.full_name }}</option>
+            {% endfor %}
+        </select>
+
+        {% if user %}
+        <label>Account Status</label>
+        <select name="is_active">
+            <option value="1" {% if user.is_active_user %}selected{% endif %}>Active</option>
+            <option value="0" {% if not user.is_active_user %}selected{% endif %}>Disabled</option>
+        </select>
+        {% endif %}
+
+        <button type="submit" class="btn">Save</button>
+        <a href="{{ url_for('admin.user_list') }}" class="link">Cancel</a>
+    </form>
+</div>
+{% endblock %}

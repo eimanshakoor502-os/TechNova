@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Employees{% endblock %}
+{% block heading %}Employees{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-head">
+        <h3>All Employees ({{ employees|length }})</h3>
+        <a href="{{ url_for('employees.employee_add') }}" class="btn">+ Add Employee</a>
+    </div>
+        <form method="GET" class="search-form">
+        <input type="text" name="q" value="{{ q or '' }}" placeholder="Name, email ya designation se search karo">
+        <button type="submit" class="btn">Search</button>
+    </form>
+    <table>
+        <tr>
+            <th>Name</th><th>Email</th><th>Designation</th><th>Department</th><th>Status</th><th>Actions</th>
+        </tr>
+        {% for e in employees %}
+        <tr>
+            <td>{{ e.full_name }}</td>
+            <td>{{ e.email }}</td>
+            <td>{{ e.designation or '-' }}</td>
+            <td>{{ e.department.name if e.department else '-' }}</td>
+            <td>{{ e.status }}</td>
+            <td>
+                <a href="{{ url_for('employees.employee_edit', emp_id=e.id) }}" class="link">Edit</a>
+                {% if current_user.role == 'admin' %}
+                <form method="POST" action="{{ url_for('employees.employee_delete', emp_id=e.id) }}" class="inline" onsubmit="return confirm('Delete karna hai?');">
+                    <button class="link danger-text">Delete</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6">Abhi koi employee nahi.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

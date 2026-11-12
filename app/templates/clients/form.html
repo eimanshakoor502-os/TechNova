@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Client{% endblock %}
+{% block heading %}{{ 'Edit Client' if client else 'Add Client' }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <form method="POST">
+        <label>Company Name</label>
+        <input type="text" name="company_name" value="{{ client.company_name if client else '' }}" required>
+
+        <label>Contact Person</label>
+        <input type="text" name="contact_person" value="{{ client.contact_person or '' if client else '' }}">
+
+        <label>Email</label>
+        <input type="email" name="email" value="{{ client.email or '' if client else '' }}">
+
+        <label>Phone</label>
+        <input type="text" name="phone" value="{{ client.phone or '' if client else '' }}">
+
+        <label>Address</label>
+        <input type="text" name="address" value="{{ client.address or '' if client else '' }}">
+
+        <button type="submit" class="btn">Save</button>
+        <a href="{{ url_for('work.client_list') }}" class="link">Cancel</a>
+    </form>
+</div>
+{% endblock %}

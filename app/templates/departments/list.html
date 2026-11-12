@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Departments{% endblock %}
+{% block heading %}Departments{% endblock %}
+
+{% block content %}
+{% if current_user.role == 'admin' %}
+<div class="panel" style="margin-bottom:20px;">
+    <h3>Add Department</h3>
+    <form method="POST" action="{{ url_for('employees.department_add') }}" class="row-form">
+        <input type="text" name="name" placeholder="Department name" required>
+        <input type="text" name="description" placeholder="Description (optional)">
+        <button type="submit" class="btn">Add</button>
+    </form>
+</div>
+{% endif %}
+
+<div class="panel">
+    <h3>All Departments</h3>
+    <table>
+        <tr><th>Name</th><th>Description</th><th>Employees</th>{% if current_user.role == 'admin' %}<th>Actions</th>{% endif %}</tr>
+        {% for d in departments %}
+        <tr>
+            <td>{{ d.name }}</td>
+            <td>{{ d.description or '-' }}</td>
+            <td>{{ d.employees|length }}</td>
+            {% if current_user.role == 'admin' %}
+            <td>
+                <form method="POST" action="{{ url_for('employees.department_delete', dept_id=d.id) }}" class="inline" onsubmit="return confirm('Delete karna hai?');">
+                    <button class="link danger-text">Delete</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

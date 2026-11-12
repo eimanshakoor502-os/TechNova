@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Audit Logs{% endblock %}
+{% block heading %}Audit Logs{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <h3>Activity Record ({{ pagination.total }})</h3>
+    <table>
+        <tr><th>Time</th><th>User</th><th>Action</th></tr>
+        {% for log in pagination.items %}
+        <tr>
+            <td>{{ log.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+            <td>{{ log.user.username if log.user else '(deleted user)' }}</td>
+            <td>{{ log.action }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">Abhi koi record nahi.</td></tr>
+        {% endfor %}
+    </table>
+
+    <div style="margin-top:16px;">
+        {% if pagination.has_prev %}<a class="link" href="{{ url_for('admin.audit_logs', page=pagination.prev_num) }}">&larr; Previous</a>{% endif %}
+        Page {{ pagination.page }} / {{ pagination.pages or 1 }}
+        {% if pagination.has_next %}<a class="link" href="{{ url_for('admin.audit_logs', page=pagination.next_num) }}">Next &rarr;</a>{% endif %}
+    </div>
+</div>
+{% endblock %}

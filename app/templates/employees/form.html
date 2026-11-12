@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Employee{% endblock %}
+{% block heading %}{{ 'Edit Employee' if employee else 'Add Employee' }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <form method="POST">
+        <label>Full Name</label>
+        <input type="text" name="full_name" value="{{ employee.full_name if employee else '' }}" required>
+
+        <label>Email</label>
+        <input type="email" name="email" value="{{ employee.email if employee else '' }}" required>
+
+        <label>Phone</label>
+        <input type="text" name="phone" value="{{ employee.phone or '' if employee else '' }}">
+
+        <label>Designation</label>
+        <input type="text" name="designation" value="{{ employee.designation or '' if employee else '' }}">
+
+        <label>Salary</label>
+        <input type="number" step="0.01" name="salary" value="{{ employee.salary or '' if employee else '' }}">
+
+        <label>Department</label>
+        <select name="department_id">
+            <option value="">-- Select --</option>
+            {% for d in departments %}
+            <option value="{{ d.id }}" {% if employee and employee.department_id == d.id %}selected{% endif %}>{{ d.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Status</label>
+        <select name="status">
+            {% for s in ['Active', 'On Leave', 'Inactive'] %}
+            <option value="{{ s }}" {% if employee and employee.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn">Save</button>
+        <a href="{{ url_for('employees.employee_list') }}" class="link">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}TechNova - Projects{% endblock %}
+{% block heading %}Projects{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-head">
+        <h3>All Projects ({{ projects|length }})</h3>
+        <a href="{{ url_for('work.project_add') }}" class="btn">+ Add Project</a>
+    </div>
+    <table>
+        <tr><th>Project</th><th>Client</th><th>Deadline</th><th>Status</th><th>Team</th><th>Tasks</th><th>Actions</th></tr>
+        {% for p in projects %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.client.company_name if p.client else '-' }}</td>
+            <td>{{ p.deadline.strftime('%d %b %Y') if p.deadline else '-' }}</td>
+            <td>{{ p.status }}</td>
+            <td>{{ p.members|length }}</td>
+            <td>{{ p.tasks|length }}</td>
+            <td>
+                <a href="{{ url_for('work.project_edit', project_id=p.id) }}" class="link">Edit</a>
+                {% if current_user.role == 'admin' %}
+                <form method="POST" action="{{ url_for('work.project_delete', project_id=p.id) }}" class="inline" onsubmit="return confirm('Delete karna hai?');">
+                    <button class="link danger-text">Delete</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7">Abhi koi project nahi.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
